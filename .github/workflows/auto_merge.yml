@@ -72,7 +72,7 @@ jobs:
         uses: mavrosxristoforos/get-xml-info@1.0
         with:
           xml-file: 'Assets/PlayFabSDK/source/PlayFabSDK.csproj'
-          xpath: 'Project/PropertyGroup/Version/text()'
+          xpath: '//Project/PropertyGroup/Version/text()'
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@master
         with:
