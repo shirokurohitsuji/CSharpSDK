@@ -68,8 +68,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get XML
-        id: getxml
-        uses: mavrosxristoforos/get-xml-info@1.0
+        id: getxpath
+        uses: QwerMike/xpath-action@v1
         with:
           xml-file: 'Assets/PlayFabSDK/source/PlayFabSDK.csproj'
           xpath: '//Project/PropertyGroup/Version/text()'
@@ -77,7 +77,7 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@master
         with:
           find: '\d\.\d{2}\.\d{6}'
-          replace: ${{ steps.getxml.outputs.info }}
+          replace: ${{ steps.getxpath.outputs.result }}
           include: "Assets/PlayFabSDK/source/package.json"
 
   update:
