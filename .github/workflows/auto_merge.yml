@@ -71,8 +71,8 @@ jobs:
         id: getxpath
         uses: QwerMike/xpath-action@v1
         with:
-          xml-file: 'Assets/PlayFabSDK/source/PlayFabSDK.csproj'
-          xpath: '//Project/PropertyGroup/Version/text()'
+          filename: 'Assets/PlayFabSDK/source/PlayFabSDK.csproj'
+          expression: '//Project/PropertyGroup/Version/text()'
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@master
         with:
