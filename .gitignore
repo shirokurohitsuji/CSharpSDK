@@ -12,3 +12,6 @@ PlayFabServerSDK/
 *.suo
 *.user
 *.nupkg
+
+.idea
+.DS_Store

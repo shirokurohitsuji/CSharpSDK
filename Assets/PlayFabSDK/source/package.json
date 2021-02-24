@@ -1,0 +1,17 @@
+{
+  "name": "studio.shirokurohitsuji.playfab",
+  "version": "1.89.210208",
+  "displayName": "PlayFab",
+  "description": "SDK for C#/.net environments.",
+  "unity": "2020.2",
+  "unityRelease": "4f1",
+  "keywords": [
+    "PlayFab",
+    "CsharpSdk"
+  ],
+  "author": {
+    "name": "Hinuko Shima",
+    "url": "https://github.com/shirokurohitsuji"
+  },
+  "type": "module"
+}
