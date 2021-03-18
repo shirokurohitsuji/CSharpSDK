@@ -24,10 +24,11 @@ on:
     #         │ │ │ │ │
     #         │ │ │ │ │
     #         * * * * *
-    - cron:  '10 */1 * * *'
+    - cron:  '0 0 */1 * *'
+  push:
 
 jobs:
-  merge:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,67 +36,49 @@ jobs:
         run: |
           git config --global user.name ${NAME}
           git config --global user.email ${EMAIL}
-
           # Pass the --rebase-merges option to git rebase by default
           git config --global pull.rebase merges
-
           # "git checkout master" is unnecessary, already here by default
           git pull --unshallow  # this option is very important, you would get
                                 # complains about unrelated histories without it.
                                 # (but actions/checkout@v2 can also be instructed
                                 # to fetch all git depth right from the start)
-
           # Add the repo which you forked to the remote and name it as "upstream"
           git remote add upstream ${REPO_FORK}
-
           # Fetch the upstream branches to local
           git fetch upstream
-
           # Merge changes
           git checkout master
           git merge --no-edit upstream/master
-          git push origin master
-
-        # Change the below to your settings
         env:
-          NAME: Hinuko Shima
-          EMAIL: shirokurohitsuji+shimahinuko@gmail.com
+          NAME: shirokurohitsuji
+          EMAIL: shimahinuko@shirokurohitsuji.studio
           REPO_FORK: https://github.com/PlayFab/CSharpSDK.git
 
-  edit:
-    runs-on: ubuntu-latest
-    needs: merge
-    steps:
-      - uses: actions/checkout@v2
-      - name: Get XML
-        id: getxpath
-        uses: QwerMike/xpath-action@v1
-        with:
-          filename: 'Assets/PlayFabSDK/source/PlayFabSDK.csproj'
-          expression: '//Project/PropertyGroup/Version/text()'
+      - name: Count changes
+        id: changes
+        run: |
+          git add -N .
+          echo "::set-output name=count::$(git diff upstream/master --name-only | wc -l)"
+      - name: Get Version
+        if: steps.changes.outputs.count > 0
+        id: regex-match
+        shell: bash
+        run: |
+          VERSION=`cat Assets/PlayFabSDK/source/PlayFabSDK.csproj | sed -n 's/\s*<Version>\(\S*\)<\/Version>$/\1/p'`
+          echo "::set-output name=version::$VERSION"
       - name: Find and Replace
+        if: steps.changes.outputs.count > 0
+        id: replace
         uses: jacobtomlinson/gha-find-replace@master
         with:
           find: '\d\.\d{2}\.\d{6}'
-          replace: ${{ steps.getxpath.outputs.result }}
+          replace: ${{ steps.regex-match.outputs.version }}
           include: "Assets/PlayFabSDK/source/package.json"
 
-  update:
-    runs-on: ubuntu-latest
-    needs: edit
-    steps:
-      - uses: actions/checkout@v2
-      - name: Update forked repository
+      - name: Update repository
+        if: steps.replace.outputs.modifiedFiles > 0
         run: |
-          git config --global user.name ${NAME}
-          git config --global user.email ${EMAIL}
-
           git add -A
-          git commit -m ":arrow_up: update version"
+          git commit -m ":arrow_up: update version ${{ steps.regex-match.outputs.version }}"
           git push origin master
-
-        # Change the below to your settings
-        env:
-          NAME: Hinuko Shima
-          EMAIL: shirokurohitsuji+shimahinuko@gmail.com
-          REPO_FORK: https://github.com/PlayFab/CSharpSDK.git
