@@ -1,6 +1,6 @@
 {
   "name": "studio.shirokurohitsuji.playfab",
-  "version": "1.93.210511",
+  "version": "1.94.210521",
   "displayName": "PlayFab",
   "description": "SDK for C#/.net environments.",
   "unity": "2020.3",
